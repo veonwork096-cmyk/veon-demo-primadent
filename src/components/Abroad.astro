@@ -1,0 +1,103 @@
+---
+import Icon from "./Icon.astro";
+import FutureLink from "./FutureLink.astro";
+import { clinic } from "../data/clinic";
+
+// Steps and checklist as published on the clinic's «Я за кордоном» page (C-007).
+const steps = [
+  { title: "Напишіть нам", text: "Опишіть вашу ситуацію в Telegram і прикріпіть знімки." },
+  { title: "Надішліть знімок", text: "Панорамний знімок (OPG) або КЛКТ можна зробити в будь-якій клініці." },
+  { title: "Відеоконсультація", text: "Онлайн-зустріч з лікарем через Zoom або Viber, 20–30 хв." },
+  { title: "План лікування", text: "Детальний план з термінами та вартістю." },
+];
+const prepare = [
+  "Панорамний знімок зубів (OPG), не старше 6 місяців",
+  "Фото зубів, якщо є скарги на конкретну ділянку",
+  "Список ліків, які приймаєте",
+  "Опис скарг та побажань",
+];
+---
+<section id="abroad" class="section abroad dark" data-rec="R-005,S-R006" aria-labelledby="abroad-title">
+  <div class="container">
+    <div class="abroad__head">
+      <h2 id="abroad-title" class="h2">Живете за кордоном?</h2>
+      <p class="abroad__lead">Почніть онлайн: план з термінами та вартістю ви отримаєте ще до приїзду в Ужгород.</p>
+    </div>
+
+    <ol class="abroad__steps" role="list" data-line>
+      {steps.map((s, i) => (
+        <li class="abroad__step">
+          <span class="abroad__num figure" aria-hidden="true">{i + 1}</span>
+          <h3 class="abroad__step-title">{s.title}</h3>
+          <p class="small abroad__muted">{s.text}</p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="abroad__grid">
+      <div class="abroad__visit">
+        <p class="abroad__days figure">2–5 днів</p>
+        <p>Більшість процедур можна виконати за 2–5 днів перебування. Графік складемо так, щоб ефективно використати ваш час.</p>
+      </div>
+      <div class="abroad__prep">
+        <h3 class="h3">Що підготувати</h3>
+        <ul class="abroad__list" role="list">
+          {prepare.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+    </div>
+
+    <div class="abroad__cta">
+      <a class="btn btn--primary" href={clinic.telegramBot} target="_blank" rel="noopener"><Icon name="telegram" /><span>Написати в Telegram</span></a>
+      <a class="btn btn--ghost-dark" href={clinic.phoneHref}><Icon name="phone" /><span>Зателефонувати</span></a>
+    </div>
+    <div class="abroad__more">
+      <FutureLink note="Розділ у розробці">Детальніше про онлайн-консультацію</FutureLink>
+    </div>
+  </div>
+</section>
+
+<style>
+  .abroad { background: var(--color-text); color: var(--color-bg); }
+  .abroad__head { display: grid; gap: var(--sp-4); margin-bottom: clamp(2.5rem, 1.6rem + 3.6vw, 5rem); }
+  .abroad__lead { max-width: 44ch; color: var(--color-on-dark-muted); }
+  .abroad__muted { color: var(--color-on-dark-muted); }
+
+  .abroad__steps { list-style: none; display: grid; gap: var(--sp-8); position: relative; padding-left: var(--sp-12); }
+  .abroad__steps::before {
+    content: ""; position: absolute; left: 13px; top: 8px; bottom: 8px; width: var(--line); background: var(--color-accent-on-dark);
+    transform-origin: center top; transition: transform 700ms var(--ease-out);
+  }
+  :global(.js) .abroad__steps:not(.is-visible)::before { transform: scaleY(0); }
+  .abroad__step { position: relative; display: grid; gap: var(--sp-2); }
+  .abroad__num {
+    position: absolute; left: calc(-1 * var(--sp-12)); top: -2px; width: 28px; height: 28px; display: grid; place-items: center;
+    font-size: 1rem; background: var(--color-accent-on-dark); color: var(--color-text); border-radius: 50%;
+  }
+  .abroad__step-title { font-size: var(--fs-title); line-height: 1.2; }
+
+  .abroad__grid { display: grid; gap: var(--sp-12); margin-top: clamp(3rem, 2rem + 4vw, 6rem); padding-top: clamp(2.5rem, 1.6rem + 3.6vw, 4rem); border-top: 1px solid var(--color-muted); }
+  .abroad__visit { display: grid; gap: var(--sp-4); align-content: start; }
+  .abroad__days { color: var(--color-accent-on-dark); font-size: clamp(3rem, 2rem + 4vw, 5.5rem); line-height: 1; }
+  .abroad__visit p:last-child { max-width: 40ch; color: var(--color-on-dark-muted); }
+  .abroad__prep { display: grid; gap: var(--sp-4); align-content: start; }
+  .abroad__list { list-style: none; }
+  .abroad__list li { padding-block: var(--sp-3); border-bottom: 1px solid var(--color-muted); }
+  .abroad__cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3) var(--sp-6); margin-top: clamp(2.5rem, 1.6rem + 3.6vw, 4rem); }
+  .abroad__more { margin-top: var(--sp-6); }
+  @media (max-width: 599px) { .abroad__cta .btn { flex: 1 1 100%; } }
+
+  @media (min-width: 900px) {
+    .abroad__steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gutter); padding-left: 0; padding-top: var(--sp-16); }
+    .abroad__steps::before { left: 0; right: 0; top: 13px; bottom: auto; width: auto; height: var(--line); transform-origin: left center; }
+    :global(.js) .abroad__steps:not(.is-visible)::before { transform: scaleX(0); }
+    .abroad__num { left: 0; top: calc(-1 * var(--sp-16)); }
+    .abroad__step { padding-right: var(--sp-6); }
+    .abroad__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
+    .abroad__visit { grid-column: 1 / span 5; }
+    .abroad__prep { grid-column: 7 / span 6; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .abroad__steps:not(.is-visible)::before { transform: none; }
+  }
+</style>

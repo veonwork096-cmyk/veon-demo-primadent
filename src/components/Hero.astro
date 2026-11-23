@@ -1,0 +1,79 @@
+---
+import BeforeAfter from "./BeforeAfter.astro";
+import Icon from "./Icon.astro";
+import { clinic } from "../data/clinic";
+import before from "../assets/img/allon4-before.jpg";
+import after from "../assets/img/allon4-after.jpg";
+
+interface Props { h1: string; }
+const { h1 } = Astro.props;
+---
+<section id="hero" class="hero" data-rec="R-004,G-R003,M-R003,S-R005" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <h1 id="hero-title" class="h1 hero__title">{h1}</h1>
+    <p class="hero__sentence">Консультація від&nbsp;<span class="tnum">1&nbsp;200</span>&nbsp;грн: огляд, план лікування, оцінка КТ та планування імплантації.</p>
+    <div class="hero__cta">
+      <div class="actions">
+        <a class="btn btn--primary" href={clinic.phoneHref}><Icon name="phone" /><span>Зателефонувати</span></a>
+        <a class="btn btn--secondary" href={clinic.telegramBot} target="_blank" rel="noopener"><Icon name="telegram" /><span>Написати в Telegram</span></a>
+      </div>
+      <p class="hero__where small">
+        <a class="hero__map" href={clinic.mapHref} target="_blank" rel="noopener"><Icon name="pin" /><span>{clinic.address}, {clinic.city}</span></a>
+        <span class="hero__hours">{clinic.hoursShort}</span>
+      </p>
+    </div>
+  </div>
+
+  <figure class="container hero__case">
+    <BeforeAfter
+      class="hero__ba"
+      before={before} after={after}
+      altBefore="Пацієнтка до тотальної імплантації: зубів немає"
+      altAfter="Та сама пацієнтка після тотальної імплантації All-on-4"
+      label="Порівняти фото до і після тотальної імплантації All-on-4"
+      sizes="(min-width: 1440px) 1360px, calc(100vw - 2.5rem)"
+      widths={[480, 768, 1080, 1440, 2040]}
+      position="50% 52%"
+      start={32}
+      priority intro
+    />
+    <figcaption class="hero__caption">
+      <span class="hero__case-name">Тотальна імплантація All-on-4, від&nbsp;<span class="tnum">43&nbsp;600</span>&nbsp;грн</span>
+      <span class="small muted">Фото опубліковані клінікою й показані без змін. Результат лікування індивідуальний.</span>
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  .hero { padding-top: clamp(1.5rem, 0.6rem + 3.6vw, 3rem); padding-bottom: 0; }
+  :global(#situations) { padding-top: clamp(3rem, 2.5rem + 2vw, 4rem); }
+  .hero__grid { display: grid; gap: var(--sp-6); }
+  .hero__title { max-width: 18ch; }
+  .hero__sentence { max-width: 40ch; }
+  .hero__cta { display: grid; gap: var(--sp-4); }
+  .hero__where { display: flex; flex-wrap: wrap; align-items: center; column-gap: var(--sp-6); row-gap: var(--sp-1); color: var(--color-muted); }
+  .hero__map {
+    display: inline-flex; align-items: center; gap: var(--sp-2); min-height: 44px; color: var(--color-text); font-weight: 500;
+    text-decoration: underline 1px; text-underline-offset: .3em; text-decoration-color: var(--color-border);
+    transition: text-decoration-color 200ms var(--ease-out), color 200ms var(--ease-out);
+  }
+  .hero__map:hover { color: var(--color-accent); text-decoration-color: currentColor; }
+  .hero__map :global(svg) { color: var(--color-accent); }
+  .hero__case { margin-top: clamp(1.75rem, 1.2rem + 2.2vw, 2.5rem); }
+  .hero__case :global(.hero__ba) { aspect-ratio: 4 / 3; }
+  .hero__caption { display: grid; gap: var(--sp-1); margin-top: var(--sp-3); }
+  .hero__case-name { font-weight: 500; }
+
+  @media (min-width: 600px) {
+    .hero__case :global(.hero__ba) { aspect-ratio: 2 / 1; }
+    .hero__caption { grid-template-columns: auto 1fr; column-gap: var(--sp-6); align-items: baseline; }
+    .hero__caption .small { justify-self: end; text-align: right; }
+  }
+  @media (min-width: 1024px) {
+    .hero__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: var(--sp-8); align-items: last baseline; }
+    .hero__title { grid-column: 1 / span 9; max-width: none; }
+    .hero__sentence { grid-column: 10 / span 3; }
+    .hero__cta { grid-column: 1 / -1; grid-template-columns: auto 1fr; align-items: center; column-gap: var(--sp-8); }
+    .hero__case :global(.hero__ba) { aspect-ratio: 34 / 7; }
+  }
+</style>

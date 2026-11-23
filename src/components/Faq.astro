@@ -1,0 +1,43 @@
+---
+import Icon from "./Icon.astro";
+import FutureLink from "./FutureLink.astro";
+import { faq } from "../data/clinic";
+---
+<section id="faq" class="section section--surface" aria-labelledby="faq-title">
+  <div class="container split" data-line>
+    <div class="split__a faq__head">
+      <h2 id="faq-title" class="h2">Запитання</h2>
+      <FutureLink note="Розділ у розробці">Усі запитання</FutureLink>
+    </div>
+    <div class="split__b faq__list">
+      {faq.map((f, i) => (
+        <details class="faq__item" open={i === 0}>
+          <summary class="faq__q">
+            <span>{f.q}</span>
+            <Icon name="plus" class="icon faq__icon" />
+          </summary>
+          <p class="faq__a">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq__head { display: grid; gap: var(--sp-4); align-content: start; }
+  .faq__item { border-bottom: 1px solid var(--color-border); }
+  .faq__item:first-child { border-top: 1px solid var(--color-border); }
+  .faq__q {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-4); align-items: center;
+    min-height: 64px; padding-block: var(--sp-4); cursor: pointer; list-style: none;
+    font-family: var(--font-display); font-weight: 500; font-size: 1.1875rem; line-height: 1.3;
+    transition: color 200ms var(--ease-out);
+  }
+  .faq__q::-webkit-details-marker { display: none; }
+  .faq__q:hover { color: var(--color-accent); }
+  .faq__q :global(.faq__icon) { width: 24px; height: 24px; color: var(--color-accent); transition: transform 240ms var(--ease-out); }
+  .faq__item[open] .faq__q :global(.faq__icon) { transform: rotate(45deg); }
+  .faq__a { padding-bottom: var(--sp-6); max-width: 60ch; color: var(--color-text); }
+  :global(.js) .faq__item[open] .faq__a { animation: faq-in 240ms var(--ease-out) both; }
+  @keyframes faq-in { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+</style>

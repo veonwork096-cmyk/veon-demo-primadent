@@ -1,0 +1,71 @@
+---
+import { Picture } from "astro:assets";
+import Icon from "./Icon.astro";
+import FutureLink from "./FutureLink.astro";
+import { clinic, price } from "../data/clinic";
+import founder from "../assets/img/founder.jpg";
+
+const figures = [
+  { ...price.consultation, note: "Огляд, план лікування, оцінка КТ та планування імплантації" },
+  { ...price.implantation, note: "" },
+  { ...price.implants, note: "" },
+  { ...price.total, note: "Повне відновлення зубного ряду, зокрема All-on-4" },
+];
+---
+<section id="implants" class="section section--surface" aria-labelledby="implants-title">
+  <div class="container split imp" data-line>
+    <figure class="split__a imp__founder">
+      <Picture src={founder} alt="Максим Прийма, засновник PrimaDent, у клініці" formats={["avif", "webp"]}
+        widths={[360, 540, 720, 1080]} sizes="(min-width: 900px) 34vw, 100vw" loading="lazy" quality={72} class="imp__photo" />
+      <figcaption class="small">
+        <span class="imp__name">Прийма Максим Борисович</span><br />
+        <span class="muted">Ортопед і хірург-імплантолог, засновник клініки, 14 років досвіду</span>
+      </figcaption>
+    </figure>
+
+    <div class="split__b imp__body">
+      <h2 id="implants-title" class="h2">Імплантація та All-on-4</h2>
+      <p class="lead">Спершу консультація з оцінкою КТ. На ній лікар складає план імплантації, і ви бачите терміни та вартість до початку лікування.</p>
+
+      <ul class="imp__figs" role="list">
+        {figures.map((f) => (
+          <li class="imp__fig">
+            <span class="imp__fig-name">{f.name}</span>
+            <span class="figure imp__fig-price"><small>від </small>{f.price}<small> грн</small></span>
+            <span class="small muted">{f.note ? `${f.note}. ` : ""}Прийом {f.time}</span>
+          </li>
+        ))}
+      </ul>
+
+      <p class="imp__note small" data-rec="R-009,G-R003,M-R003,S-R006">
+        «Імплантація» від 1&nbsp;500 грн і «Імпланти» від 13&nbsp;900 грн — дві окремі позиції прайсу клініки. Точну вартість вашого лікування визначає план після консультації.
+      </p>
+
+      <div class="actions">
+        <a class="btn btn--primary" href={clinic.phoneHref}><Icon name="phone" /><span>Зателефонувати</span></a>
+        <a class="btn btn--secondary" href={clinic.telegramBot} target="_blank" rel="noopener"><Icon name="telegram" /><span>Написати в Telegram</span></a>
+      </div>
+      <FutureLink note="Розділ у розробці">Що робити, якщо немає зуба</FutureLink>
+    </div>
+  </div>
+</section>
+
+<style>
+  .imp { align-items: start; }
+  .imp__founder { display: grid; gap: var(--sp-3); }
+  .imp__founder :global(.imp__photo) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .imp__name { font-weight: 600; font-size: 1rem; }
+  .imp__body { display: grid; gap: var(--sp-8); align-content: start; }
+  .imp__figs { list-style: none; display: grid; gap: 0; }
+  .imp__fig { display: grid; gap: var(--sp-1); padding-block: var(--sp-6); border-top: 1px solid var(--color-border); }
+  .imp__fig-name { font-weight: 500; }
+  .imp__fig-price { color: var(--color-accent); }
+  .imp__fig-price small { font-family: var(--font-body); font-size: var(--fs-small); font-weight: 400; color: var(--color-muted); }
+  .imp__note { padding: var(--sp-4) var(--sp-6); background: var(--color-bg); border-left: var(--line) solid var(--color-accent); max-width: 60ch; }
+  @media (min-width: 600px) {
+    .imp__figs { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--sp-8); }
+  }
+  @media (min-width: 900px) {
+    .imp__founder { position: sticky; top: calc(var(--header-h) + var(--sp-8)); }
+  }
+</style>

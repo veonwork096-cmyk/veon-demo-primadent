@@ -1,0 +1,84 @@
+---
+import BeforeAfter from "./BeforeAfter.astro";
+import Icon from "./Icon.astro";
+import FutureLink from "./FutureLink.astro";
+import { clinic, price } from "../data/clinic";
+import beyondBefore from "../assets/img/beyond-before.jpg";
+import beyondAfter from "../assets/img/beyond-after.jpg";
+import canalsBefore from "../assets/img/canals-before.jpg";
+import canalsAfter from "../assets/img/canals-after.jpg";
+import restoBefore from "../assets/img/resto-before.jpg";
+import restoAfter from "../assets/img/resto-after.jpg";
+
+// Cases published by the clinic (C-008); doctors are not named on these case pages, so none are shown.
+const cases = [
+  {
+    key: "beyond", big: true, title: "Професійне відбілювання зубів системою Beyond",
+    service: price.whitening, before: beyondBefore, after: beyondAfter,
+    alt: ["Зуби пацієнта до відбілювання", "Ті самі зуби після відбілювання Beyond"],
+  },
+  {
+    key: "canals", big: false, title: "Лікування каналів і підготовка зубів до протезування",
+    service: price.endo, before: canalsBefore, after: canalsAfter,
+    alt: ["Зруйновані жувальні зуби до лікування", "Зуби після лікування каналів, підготовлені під коронки"],
+  },
+  {
+    key: "resto", big: false, title: "Заміна старої реставрації жувального зуба",
+    service: price.therapy, before: restoBefore, after: restoAfter,
+    alt: ["Жувальний зуб зі старою пломбою", "Той самий зуб після нової реставрації"],
+  },
+];
+---
+<section id="cases" class="section" aria-labelledby="cases-title">
+  <div class="container">
+    <div class="cases__head">
+      <h2 id="cases-title" class="h2">До і після</h2>
+      <div class="cases__aside">
+        <p class="muted cases__note">Фото опубліковані клінікою й показані без змін. Результат лікування індивідуальний.</p>
+        <FutureLink note="Розділ у розробці">Усі кейси до і після</FutureLink>
+      </div>
+    </div>
+
+    <div class="cases__grid">
+      {cases.map((c) => (
+        <article class:list={["case", { "case--big": c.big }]} aria-labelledby={`case-${c.key}`}>
+          <BeforeAfter
+            class="case__ba"
+            before={c.before} after={c.after} altBefore={c.alt[0]} altAfter={c.alt[1]}
+            label={`Порівняти фото до і після: ${c.title.toLowerCase()}`}
+            sizes={c.big ? "(min-width: 900px) 64vw, 100vw" : "(min-width: 900px) 30vw, 100vw"}
+            widths={c.big ? [480, 768, 1080, 1440] : [400, 640, 900]}
+          />
+          <div class="case__text">
+            <h3 id={`case-${c.key}`} class="h3 case__title">{c.title}</h3>
+            <p class="small muted">{c.service.name}, від <span class="tnum">{c.service.price}</span> грн</p>
+            <a class="link small" href={clinic.telegramBot} target="_blank" rel="noopener"><span>Обговорити схожий випадок у Telegram</span><Icon name="arrow-up" /></a>
+          </div>
+        </article>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .cases__head { display: grid; gap: var(--sp-4); margin-bottom: clamp(2rem, 1.4rem + 2.5vw, 4rem); }
+  .cases__note { max-width: 46ch; }
+  .cases__grid { display: grid; gap: var(--sp-12); }
+  .case { display: grid; gap: var(--sp-4); align-content: start; }
+  .case :global(.case__ba) { aspect-ratio: 3 / 2; }
+  .case__text { display: grid; gap: var(--sp-1); }
+  .case__title { max-width: 30ch; }
+  .case--big .case__title { font-size: var(--fs-title); }
+  .case:not(.case--big) .case__title { font-size: 1.1875rem; }
+  .cases__aside { display: grid; gap: var(--sp-2); justify-items: start; }
+  @media (min-width: 900px) {
+    .cases__head { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: end; }
+    .cases__head h2 { grid-column: 1 / span 5; text-wrap: balance; }
+    .cases__aside { grid-column: 6 / span 7; padding-left: clamp(2rem, 1rem + 3vw, 4rem); }
+    .cases__grid { grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: var(--sp-8); }
+    .case--big { grid-column: 1 / span 8; grid-row: 1 / span 2; grid-template-rows: minmax(0, 1fr) auto; align-content: stretch; }
+    .case--big :global(.case__ba) { aspect-ratio: auto; height: 100%; min-height: 0; }
+    .case:not(.case--big) { grid-column: 9 / span 4; }
+  }
+</style>

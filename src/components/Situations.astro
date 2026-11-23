@@ -1,0 +1,137 @@
+---
+// «З чим ви прийшли?» — situation on the left of the line, the clinic's plan on the right.
+// One markup for both widths: disclosure buttons (aria-expanded). ≥900 px with JS they act as a switcher
+// (one panel open, panels share the right column); below 900 px they are an accordion. Without JS all panels are open.
+import { Picture } from "astro:assets";
+import Icon from "./Icon.astro";
+import PriceRow from "./PriceRow.astro";
+import { situations, doctors } from "../data/clinic";
+import { portraits } from "../data/images";
+---
+<section id="situations" class="section sit-section" data-rec="R-008" aria-labelledby="situations-title">
+  <div class="container sit" data-situations data-line>
+    <div class="sit__head">
+      <h2 id="situations-title" class="h2">З чим ви прийшли?</h2>
+      <p class="muted sit__intro">Оберіть ситуацію: план, ціни «від» і лікар, який цим займається.</p>
+    </div>
+
+    {situations.map((s, i) => {
+      const doc = s.doctor ? doctors[s.doctor] : undefined;
+      return (
+        <>
+          <div class="sit__h" style={`--row:${i + 2}`}>
+            <h3 class="sit__title">
+              <button class="sit__tab" type="button" id={`sit-tab-${s.id}`} aria-expanded="true" aria-controls={`sit-panel-${s.id}`} aria-describedby={`sit-hint-${s.id}`}>
+                {s.title}
+              </button>
+            </h3>
+            <p class="sit__hint" id={`sit-hint-${s.id}`}>{s.hint}</p>
+            <Icon name="plus" class="icon sit__plus" />
+          </div>
+          <div class="sit__panel" id={`sit-panel-${s.id}`} role="region" aria-labelledby={`sit-tab-${s.id}`}>
+            <p class="sit__lead">{s.lead}</p>
+            {s.items.length > 0 && (
+              <ul class="rows" role="list">
+                {s.items.map((it) => <PriceRow item={it} />)}
+              </ul>
+            )}
+            {doc && (
+              <div class="sit__doc">
+                <Picture src={portraits[doc.id]} alt="" formats={["avif", "webp"]} widths={[96, 192]} sizes="96px" loading="lazy" quality={70} class="sit__doc-img" />
+                <p class="small"><span class="sit__doc-name">{doc.name}</span><br /><span class="muted">{doc.role}, {doc.years}</span></p>
+              </div>
+            )}
+            <a class="link" href={s.next.href}><span>{s.next.label}</span><Icon name="arrow" /></a>
+          </div>
+        </>
+      );
+    })}
+    <span class="sit__line" aria-hidden="true"></span>
+  </div>
+</section>
+
+<style>
+  .sit { display: grid; row-gap: 0; }
+  .sit__head { display: grid; gap: var(--sp-4); margin-bottom: var(--sp-8); }
+  .sit__intro { max-width: 40ch; }
+  .sit__h {
+    position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: var(--sp-4); row-gap: var(--sp-1);
+    padding: var(--sp-4) 0; min-height: 64px; border-top: 1px solid var(--color-border); transition: background-color 200ms var(--ease-out);
+  }
+  .sit__title { font-size: var(--fs-title); line-height: 1.2; }
+  @media (max-width: 380px) { .sit__title { font-size: 1.1875rem; } }
+  .sit__tab {
+    font: inherit; text-align: left; padding: 0; background: none; border: 0; cursor: pointer; transition: color 200ms var(--ease-out);
+  }
+  /* The whole row is the hit area of the button. */
+  .sit__tab::after { content: ""; position: absolute; inset: 0; }
+  .sit__tab:focus-visible { outline: none; }
+  .sit__h:has(.sit__tab:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .sit__hint { grid-column: 1; color: var(--color-muted); font-size: var(--fs-small); font-variant-numeric: tabular-nums; }
+  .sit__h :global(.sit__plus) { grid-column: 2; grid-row: 1 / span 2; width: 24px; height: 24px; color: var(--color-accent); transition: transform 240ms var(--ease-out); }
+  .sit__h:has([aria-expanded="true"]) :global(.sit__plus) { transform: rotate(45deg); }
+  .sit__h:hover .sit__tab { color: var(--color-accent); }
+  .sit__panel { display: grid; gap: var(--sp-6); align-content: start; padding: var(--sp-2) 0 var(--sp-8); position: relative; }
+  .sit__panel[hidden] { display: none; }
+  .sit__lead { max-width: 52ch; }
+  .sit__doc { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: var(--sp-4); align-items: center; }
+  .sit__doc :global(.sit__doc-img) { width: 72px; height: 90px; object-fit: cover; }
+  .sit__doc-name { font-weight: 600; font-size: 1rem; }
+  .sit__line { display: none; }
+
+  /* Motion 3: the incoming plan crosses the line (opacity + 12 px). */
+  :global(.js) .sit.is-touched .sit__panel:not([hidden]) { animation: sit-in 240ms var(--ease-out) both; }
+  @keyframes sit-in { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+  @media (max-width: 899px) {
+    :global(.js) .sit.is-touched .sit__panel:not([hidden]) { animation-name: sit-in-y; animation-duration: 200ms; }
+    @keyframes sit-in-y { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  }
+
+  @media (min-width: 900px) {
+    :global(.js) .sit { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(6, auto) 1fr; column-gap: var(--gutter); }
+    :global(.js) .sit__head { grid-column: 1 / span 5; grid-row: 1; }
+    :global(.js) .sit__h { grid-column: 1 / span 5; grid-row: var(--row); }
+    :global(.js) .sit__h { padding-inline: var(--sp-4); margin-left: calc(-1 * var(--sp-4)); }
+    :global(.js) .sit__h:nth-last-child(1 of .sit__h) { border-bottom: 1px solid var(--color-border); }
+    :global(.js) .sit__h:has([aria-expanded="true"]) { background: var(--color-accent-soft); border-top-color: transparent; }
+    :global(.js) .sit__h:has([aria-expanded="true"]) :global(.sit__plus) { transform: rotate(-90deg); }
+    :global(.js) .sit__panel {
+      grid-column: 6 / span 7; grid-row: 1 / span 7; padding: 0 0 0 clamp(2rem, 1rem + 3vw, 4rem);
+    }
+    :global(.js) .sit__line {
+      display: block; grid-column: 6; grid-row: 1 / span 7; width: var(--line); background: var(--color-accent);
+      transform-origin: center top; transition: transform 700ms var(--ease-out);
+    }
+    :global(.js) .sit:not(.is-visible) .sit__line { transform: scaleY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .sit:not(.is-visible) .sit__line { transform: none; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-situations]");
+  if (root) {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>(".sit__tab")];
+    const panel = (t: HTMLButtonElement) => document.getElementById(t.getAttribute("aria-controls") || "");
+    const wide = window.matchMedia("(min-width: 900px)");
+    const show = (t: HTMLButtonElement, open: boolean) => {
+      t.setAttribute("aria-expanded", String(open));
+      const p = panel(t);
+      if (p) p.hidden = !open;
+    };
+    const only = (t: HTMLButtonElement) => tabs.forEach((x) => show(x, x === t));
+    only(tabs[0]);
+    tabs.forEach((t) => t.addEventListener("click", () => {
+      root.classList.add("is-touched");
+      const open = t.getAttribute("aria-expanded") === "true";
+      if (wide.matches) { if (!open) only(t); }
+      else if (open) show(t, false);
+      else only(t);
+    }));
+    wide.addEventListener("change", () => {
+      const current = tabs.find((t) => t.getAttribute("aria-expanded") === "true");
+      only(current || tabs[0]);
+    });
+  }
+</script>

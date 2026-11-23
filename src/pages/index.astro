@@ -1,0 +1,74 @@
+---
+import { getImage } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import Situations from "../components/Situations.astro";
+import Implants from "../components/Implants.astro";
+import Cases from "../components/Cases.astro";
+import Abroad from "../components/Abroad.astro";
+import Prices from "../components/Prices.astro";
+import Team from "../components/Team.astro";
+import Faq from "../components/Faq.astro";
+import Contacts from "../components/Contacts.astro";
+import Footer from "../components/Footer.astro";
+import MobileBar from "../components/MobileBar.astro";
+import { clinic, faq } from "../data/clinic";
+import ogSource from "../assets/img/allon4-after.jpg";
+
+const h1 = "Стоматологія в Ужгороді: спершу план і ціна, потім лікування";
+const title = "Стоматологія в Ужгороді: імплантація, All-on-4 | PrimaDent";
+const description = "PrimaDent — стоматологія в Ужгороді: імплантація від 13 900 грн, All-on-4, лікування каналів під мікроскопом, елайнери. Консультація від 1 200 грн.";
+
+const pageUrl = Astro.site ? new URL(import.meta.env.BASE_URL, Astro.site).href : undefined;
+const og = await getImage({ src: ogSource, width: 1200, format: "jpg", quality: 80 });
+const ogImage = Astro.site ? new URL(og.src, Astro.site).href : undefined;
+
+// R-001: Dentist + FAQPage (only the four questions visible on the page). No rating, no price range, no coordinates.
+const dentist: Record<string, unknown> = {
+  "@context": "https://schema.org",
+  "@type": "Dentist",
+  name: clinic.name,
+  telephone: "+380667757766",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "вул. Мукачівська, 4",
+    addressLocality: "Ужгород",
+    addressRegion: "Закарпатська обл.",
+    addressCountry: "UA",
+  },
+  openingHoursSpecification: [
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "19:00" },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "09:00", closes: "15:00" },
+  ],
+  paymentAccepted: "Cash, Credit Card",
+  sameAs: clinic.socials.map((s) => s.href),
+};
+if (pageUrl) dentist.url = pageUrl;
+if (ogImage) dentist.image = ogImage;
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+};
+---
+<Base lang="uk" title={title} description={description} canonical={pageUrl} ogImage={ogImage} rec="R-001,R-003,R-103">
+  <Fragment slot="head">
+    <script type="application/ld+json" data-rec="R-001,R-104" set:html={JSON.stringify(dentist)} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+  </Fragment>
+  <Header slot="header" />
+  <Hero h1={h1} />
+  <Situations />
+  <Implants />
+  <Cases />
+  <Abroad />
+  <Prices />
+  <Team />
+  <Faq />
+  <Contacts />
+  <Fragment slot="footer">
+    <Footer />
+    <MobileBar />
+  </Fragment>
+</Base>

@@ -1,0 +1,54 @@
+---
+import FutureLink from "./FutureLink.astro";
+import { clinic } from "../data/clinic";
+const soon = "Розділ у розробці";
+const year = new Date().getFullYear();
+---
+<footer id="footer" class="ftr">
+  <div class="container ftr__grid">
+    <div class="ftr__col">
+      <a href="#top" class="ftr__logo" data-to-top aria-label="PrimaDent, на початок сторінки"><span>PRIMA</span><span class="ftr__dent">DENT</span></a>
+      <p class="small muted">Стоматологія в Ужгороді</p>
+    </div>
+    <div class="ftr__col">
+      <h2 class="ftr__h">Контакти</h2>
+      <a class="ftr__link tnum" href={clinic.phoneHref}>{clinic.phone}</a>
+      <a class="ftr__link" href={clinic.telegramBot} target="_blank" rel="noopener">Telegram</a>
+      <a class="ftr__link" href={clinic.mapHref} target="_blank" rel="noopener">{clinic.address}</a>
+      <p class="small muted">{clinic.city}</p>
+    </div>
+    <div class="ftr__col">
+      <h2 class="ftr__h">Графік</h2>
+      {clinic.hours.map((h) => <p class="small">{h.days}: <span class="tnum">{h.time}</span></p>)}
+    </div>
+    <div class="ftr__col">
+      <h2 class="ftr__h">Пацієнтам</h2>
+      <FutureLink note={soon}>Послуги</FutureLink>
+      <FutureLink note={soon}>Портфоліо</FutureLink>
+      <FutureLink note={soon}>Блог</FutureLink>
+      <FutureLink note="Онлайн-запис зʼявиться в повній версії сайту">Онлайн-запис</FutureLink>
+    </div>
+    <div class="ftr__col">
+      <h2 class="ftr__h">Соцмережі</h2>
+      {clinic.socials.map((s) => <a class="ftr__link" href={s.href} target="_blank" rel="noopener me">{s.name}</a>)}
+    </div>
+  </div>
+  <div class="container ftr__bottom small muted">
+    <p>© {year} PrimaDent</p>
+    <FutureLink note={soon}>Політика конфіденційності</FutureLink>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--color-surface); padding-block: var(--sp-16) var(--sp-8); }
+  .ftr__grid { display: grid; gap: var(--sp-8); grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+  .ftr__col { display: grid; gap: var(--sp-1); align-content: start; justify-items: start; }
+  .ftr__logo { display: inline-flex; min-height: 44px; align-items: center; font-family: var(--font-display); font-weight: 500; letter-spacing: 0.22em; text-decoration: none; }
+  .ftr__dent { color: var(--color-muted); }
+  .ftr__h { font-family: var(--font-body); font-size: var(--fs-small); font-weight: 500; color: var(--color-muted); margin-bottom: var(--sp-2); }
+  .ftr__link { display: inline-flex; align-items: center; min-height: 44px; text-decoration: none; transition: color 200ms var(--ease-out); }
+  .ftr__link:hover { color: var(--color-accent); text-decoration: underline; text-underline-offset: .25em; }
+  .ftr__col :global(.future-link) { font-size: 1rem; }
+  .ftr__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--sp-4); margin-top: var(--sp-12); padding-top: var(--sp-6); border-top: 1px solid var(--color-border); }
+  @media (max-width: 899px) { .ftr { padding-bottom: calc(var(--sp-8) + 72px); } }
+</style>

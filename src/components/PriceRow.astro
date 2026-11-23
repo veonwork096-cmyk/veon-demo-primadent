@@ -1,0 +1,10 @@
+---
+import type { PriceItem } from "../data/clinic";
+interface Props { item: PriceItem; }
+const { item } = Astro.props;
+---
+<li class="row">
+  <span class="row__name">{item.name}</span>
+  <span class="row__time">{item.time}</span>
+  <span class="row__price"><small>від </small>{item.price}<small> грн</small></span>
+</li>

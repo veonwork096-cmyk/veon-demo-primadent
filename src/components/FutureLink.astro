@@ -1,0 +1,33 @@
+---
+// A future page that is not built in the demo yet (menu item, button, card, footer link).
+// Renders an inactive element with a short note instead of a link: never point it to the client's current site.
+// The note shows on hover, focus and tap (phones); screen readers get it through aria-describedby.
+interface Props { note: string; class?: string; }
+const { note, class: cls } = Astro.props;
+const id = `fl-${Math.random().toString(36).slice(2, 9)}`;
+---
+<span class:list={["future-link", cls]} role="link" aria-disabled="true" tabindex="0" aria-describedby={id} data-future-link>
+  <slot />
+  <span class="future-link__note" aria-hidden="true">{note}</span>
+  <span class="visually-hidden" id={id}>{note}</span>
+</span>
+
+<script>
+  // Tap on a phone: show the note for a moment (hover does not exist there).
+  let timer = 0;
+  const closeAll = () => document.querySelectorAll(".future-link.is-open").forEach((el) => el.classList.remove("is-open"));
+  document.querySelectorAll<HTMLElement>("[data-future-link]").forEach((el) => {
+    el.addEventListener("click", () => {
+      closeAll();
+      el.classList.add("is-open");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(closeAll, 2500);
+    });
+    el.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); el.click(); }
+      if (e.key === "Escape") closeAll();
+    });
+    el.addEventListener("blur", () => el.classList.remove("is-open"));
+  });
+  document.addEventListener("click", (e) => { if (!(e.target as Element).closest?.("[data-future-link]")) closeAll(); });
+</script>

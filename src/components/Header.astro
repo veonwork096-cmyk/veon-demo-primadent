@@ -1,0 +1,160 @@
+---
+import Icon from "./Icon.astro";
+import FutureLink from "./FutureLink.astro";
+import { clinic } from "../data/clinic";
+
+const nav = [
+  { href: "#situations", label: "Послуги" },
+  { href: "#implants", label: "Імплантація" },
+  { href: "#cases", label: "Кейси" },
+  { href: "#abroad", label: "Я за кордоном" },
+  { href: "#prices", label: "Ціни" },
+  { href: "#team", label: "Лікарі" },
+  { href: "#contacts", label: "Контакти" },
+];
+---
+<header id="top" class="hdr" data-header>
+  <div class="container hdr__in">
+    <a href="#top" class="hdr__logo" data-to-top aria-label="PrimaDent, на початок сторінки">
+      <span class="hdr__prima">PRIMA</span><span class="hdr__dent">DENT</span>
+    </a>
+
+    <nav class="hdr__nav" aria-label="Розділи сторінки">
+      <ul role="list">
+        {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+      </ul>
+    </nav>
+
+    <div class="hdr__act" data-rec="R-004">
+      <a class="hdr__tg" href={clinic.telegramBot} target="_blank" rel="noopener">Telegram</a>
+      <a class="btn btn--primary hdr__phone" href={clinic.phoneHref}>
+        <Icon name="phone" />
+        <span class="tnum">{clinic.phone}</span>
+      </a>
+      <a class="hdr__call" href={clinic.phoneHref} aria-label={`Зателефонувати ${clinic.phone}`}>
+        <Icon name="phone" />
+      </a>
+      <details class="menu" data-menu>
+        <summary class="menu__btn">
+          <Icon name="menu" class="icon menu__ico-open" />
+          <Icon name="close" class="icon menu__ico-close" />
+          <span>Меню</span>
+        </summary>
+        <div class="menu__panel">
+          <nav aria-label="Меню">
+            <ul role="list" class="menu__list">
+              {nav.map((n) => <li><a href={n.href}>{n.label}</a></li>)}
+            </ul>
+          </nav>
+          <div class="menu__contacts">
+            <a class="btn btn--primary" href={clinic.phoneHref}><Icon name="phone" /><span class="tnum">{clinic.phone}</span></a>
+            <a class="btn btn--secondary" href={clinic.telegramBot} target="_blank" rel="noopener"><Icon name="telegram" /><span>Написати в Telegram</span></a>
+            <p class="small muted">{clinic.addressFull}<br />{clinic.hoursShort}</p>
+            <FutureLink note="Онлайн-запис зʼявиться в повній версії сайту">Онлайн-запис</FutureLink>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: sticky; top: 0; z-index: 50; background: var(--color-bg);
+    border-bottom: 1px solid transparent; transition: border-color 200ms var(--ease-out);
+  }
+  :global(.hdr.is-scrolled) { border-bottom-color: var(--color-border); }
+  .hdr__in { height: var(--header-h); display: flex; align-items: center; gap: var(--sp-6); }
+  .hdr__logo {
+    display: inline-flex; align-items: center; min-height: 44px; text-decoration: none;
+    font-family: var(--font-display); font-weight: 500; font-size: 1.125rem; letter-spacing: 0.22em;
+    margin-right: auto;
+  }
+  .hdr__prima { color: var(--color-text); }
+  .hdr__dent { color: var(--color-muted); }
+  .hdr__nav { display: none; }
+  .hdr__nav ul { display: flex; gap: clamp(1rem, 0.2rem + 1.1vw, 1.75rem); list-style: none; margin: 0; padding: 0; }
+  .hdr__nav a, .hdr__tg {
+    display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; font-weight: 500;
+    text-decoration: underline 1.5px; text-underline-offset: .4em; text-decoration-color: transparent;
+    transition: text-decoration-color 200ms var(--ease-out), color 200ms var(--ease-out);
+  }
+  .hdr__nav a:hover, .hdr__tg:hover { color: var(--color-accent); text-decoration-color: currentColor; }
+  .hdr__act { display: flex; align-items: center; gap: var(--sp-2); }
+  .hdr__tg, .hdr__phone { display: none; }
+  .hdr__phone { min-height: 48px; padding-inline: var(--sp-4); font-size: 1rem; }
+  .hdr__call {
+    display: inline-grid; place-items: center; width: var(--tap); height: var(--tap); border-radius: 50%;
+    background: var(--color-accent); color: var(--color-accent-ink); transition: background-color 200ms var(--ease-out), transform 200ms var(--ease-out);
+  }
+  .hdr__call:hover { background: var(--color-accent-hover); }
+  .hdr__call:active { transform: scale(.96); }
+  .hdr__call :global(svg) { width: 22px; height: 22px; }
+
+  .menu__btn {
+    display: inline-flex; align-items: center; gap: var(--sp-2); min-height: var(--tap); padding: 0 var(--sp-3);
+    border-radius: var(--radius); border: 1.5px solid var(--color-text); font-weight: 500; cursor: pointer; list-style: none;
+    transition: background-color 200ms var(--ease-out), color 200ms var(--ease-out);
+  }
+  .menu__btn::-webkit-details-marker { display: none; }
+  .menu__btn:hover { background: var(--color-text); color: var(--color-bg); }
+  .menu :global(.menu__ico-close) { display: none; }
+  .menu[open] :global(.menu__ico-close) { display: block; }
+  .menu[open] :global(.menu__ico-open) { display: none; }
+  .menu__panel {
+    position: fixed; inset: var(--header-h) 0 0 0; background: var(--color-bg); overflow-y: auto;
+    padding: var(--sp-6) var(--space) var(--sp-12); border-top: 1px solid var(--color-border);
+    display: grid; align-content: start; gap: var(--sp-8);
+  }
+  .menu__list { list-style: none; margin: 0; padding: 0; }
+  .menu__list a {
+    display: flex; align-items: center; min-height: 52px; border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-display); font-size: 1.375rem; font-weight: 500; text-decoration: none;
+  }
+  .menu__list a:hover { color: var(--color-accent); }
+  .menu__contacts { display: grid; gap: var(--sp-3); }
+
+  @media (min-width: 600px) {
+    .hdr__tg { display: inline-flex; margin-right: var(--sp-3); }
+  }
+  @media (min-width: 1200px) {
+    .hdr__nav { display: block; }
+    .hdr__phone { display: inline-flex; }
+    .hdr__call, .menu { display: none; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>("[data-header]");
+  const menu = document.querySelector<HTMLDetailsElement>("[data-menu]");
+  const onScroll = () => header?.classList.toggle("is-scrolled", window.scrollY > 8);
+  onScroll();
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  // Logo: back to the very top (the header itself is sticky, so the anchor alone would not scroll).
+  document.querySelectorAll("[data-to-top]").forEach((el) => el.addEventListener("click", (e) => {
+    e.preventDefault();
+    if (menu) menu.open = false;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    history.replaceState(null, "", "#top");
+  }));
+
+  menu?.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => { menu.open = false; }));
+  // Open menu: the page behind does not scroll, Tab stays inside the menu.
+  menu?.addEventListener("toggle", () => {
+    document.body.style.overflow = menu.open ? "hidden" : "";
+    if (menu.open) menu.querySelector<HTMLElement>(".menu__list a")?.focus();
+  });
+  menu?.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !menu.open) return;
+    const items = [...menu.querySelectorAll<HTMLElement>("summary, a[href], [tabindex='0']")].filter((el) => el.offsetParent !== null);
+    if (!items.length) return;
+    const first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && menu?.open) { menu.open = false; menu.querySelector("summary")?.focus(); }
+  });
+</script>

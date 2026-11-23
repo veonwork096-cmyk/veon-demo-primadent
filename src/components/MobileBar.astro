@@ -1,0 +1,39 @@
+---
+// Bottom action bar for phones (R-004): appears after the first screen, hides over the footer.
+import Icon from "./Icon.astro";
+import { clinic } from "../data/clinic";
+---
+<div class="mbar" data-mbar data-rec="R-004,S-R005">
+  <a class="btn btn--primary" href={clinic.phoneHref}><Icon name="phone" /><span>Зателефонувати</span></a>
+  <a class="btn btn--secondary mbar__tg" href={clinic.telegramBot} target="_blank" rel="noopener"><Icon name="telegram" /><span>Telegram</span></a>
+</div>
+
+<style>
+  .mbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3) calc(var(--sp-2) + env(safe-area-inset-bottom)); background: var(--color-bg);
+    box-shadow: 0 -4px 16px var(--color-shadow); transition: transform 300ms var(--ease-out);
+  }
+  .mbar .btn { min-height: 56px; padding-inline: var(--sp-3); }
+  .mbar__tg { background: var(--color-bg); }
+  :global(.js) .mbar:not(.is-on) { transform: translateY(110%); }
+  @media (min-width: 900px) { .mbar { display: none; } }
+</style>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-mbar]");
+  const hero = document.querySelector(".hero__cta") || document.getElementById("hero");
+  const footer = document.getElementById("footer");
+  if (bar && hero && "IntersectionObserver" in window) {
+    let pastHero = false;
+    let nearFooter = false;
+    const update = () => {
+      const off = !(pastHero && !nearFooter);
+      bar.classList.toggle("is-on", !off);
+      bar.inert = off;
+    };
+    update();
+    new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting && e.boundingClientRect.top < 0; update(); }).observe(hero);
+    if (footer) new IntersectionObserver(([e]) => { nearFooter = e.isIntersecting; update(); }).observe(footer);
+  }
+</script>

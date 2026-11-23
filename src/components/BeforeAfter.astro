@@ -1,0 +1,72 @@
+---
+// Before/after comparison: a native range input on top of two photos (keyboard ←/→, Home/End; touch drag).
+// Without JS both halves stay visible at 50 %.
+import { Picture } from "astro:assets";
+import type { ImageMetadata } from "astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  before: ImageMetadata; after: ImageMetadata;
+  altBefore: string; altAfter: string;
+  label: string; sizes: string; widths: number[];
+  priority?: boolean; intro?: boolean; class?: string; position?: string; start?: number;
+}
+const { before, after, altBefore, altAfter, label, sizes, widths, priority = false, intro = false, class: cls, position = "50% 50%", start = 50 } = Astro.props;
+const loading = priority ? "eager" : "lazy";
+---
+<div class:list={["ba", cls]} data-ba data-intro={intro ? "" : undefined} style={`--obj-pos:${position};--start:${start}%`}>
+  <div class="ba__img ba__before">
+    <Picture src={before} alt={altBefore} formats={["avif", "webp"]} widths={widths} sizes={sizes} loading={loading}
+      decoding={priority ? "sync" : "async"} fetchpriority={priority ? "high" : undefined} quality={72} />
+  </div>
+  <div class="ba__img ba__after">
+    <Picture src={after} alt={altAfter} formats={["avif", "webp"]} widths={widths} sizes={sizes} loading={loading} quality={72} />
+  </div>
+  <span class="ba__tag ba__tag--before" aria-hidden="true">До</span>
+  <span class="ba__tag ba__tag--after" aria-hidden="true">Після</span>
+  <input class="ba__range" type="range" min="0" max="100" value={start} step="1" aria-label={label} aria-valuetext={`${start} % до, ${100 - start} % після`} />
+  <div class="ba__handle" aria-hidden="true"><span class="ba__knob"><Icon name="compare" /></span></div>
+</div>
+
+<style>
+  .ba :global(img) { object-position: var(--obj-pos); }
+</style>
+
+<script>
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.querySelectorAll<HTMLElement>("[data-ba]").forEach((ba) => {
+    const range = ba.querySelector<HTMLInputElement>(".ba__range");
+    if (!range) return;
+    const set = (v: number) => {
+      ba.style.setProperty("--pos", `${v}%`);
+      range.setAttribute("aria-valuetext", `${Math.round(v)} % до, ${Math.round(100 - v)} % після`);
+    };
+    // Arrow keys move the line by 5 % (Shift: 10 %), Home/End to the edges.
+    range.addEventListener("keydown", (e) => {
+      const step = e.shiftKey ? 10 : 5;
+      const keys: Record<string, number> = { ArrowLeft: -step, ArrowDown: -step, ArrowRight: step, ArrowUp: step };
+      let v = Number(range.value);
+      if (e.key in keys) v += keys[e.key];
+      else if (e.key === "Home") v = 0;
+      else if (e.key === "End") v = 100;
+      else return;
+      e.preventDefault();
+      range.value = String(Math.max(0, Math.min(100, v)));
+      ba.classList.remove("is-intro");
+      set(Number(range.value));
+    });
+    range.addEventListener("input", () => {
+      ba.classList.remove("is-intro");
+      set(Number(range.value));
+    });
+    // The line walks across the first case once the page has loaded: shows that it can be dragged.
+    if (ba.hasAttribute("data-intro") && !reduce) {
+      const start = () => {
+        ba.classList.add("is-intro");
+        ba.addEventListener("animationend", () => { ba.classList.remove("is-intro"); set(Number(range.value)); }, { once: true });
+      };
+      if (document.readyState === "complete") requestAnimationFrame(start);
+      else window.addEventListener("load", start, { once: true });
+    }
+  });
+</script>

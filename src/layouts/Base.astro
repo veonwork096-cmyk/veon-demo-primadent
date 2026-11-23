@@ -1,0 +1,44 @@
+---
+import "../styles/fonts.css";
+import "../styles/tokens.css";
+import "../styles/global.css";
+import displayFont from "../assets/fonts/geologica-cyrillic.woff2?url";
+
+interface Props { lang: string; title: string; description: string; canonical?: string; ogImage?: string; rec?: string; }
+const { lang, title, description, canonical, ogImage, rec } = Astro.props;
+---
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <script is:inline>document.documentElement.classList.add("js")</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta name="theme-color" content="#FBFAFC" />
+    <link rel="icon" href="data:," />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="uk_UA" />
+    <meta property="og:site_name" content="PrimaDent" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta name="robots" content="noindex" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{lang.startsWith("uk") ? "До змісту" : lang.startsWith("ru") ? "К содержанию" : "Skip to content"}</a>
+    <slot name="header" />
+    <main id="main" data-rec={rec}><slot /></main>
+    <slot name="footer" />
+    <script src="../scripts/reveal.ts"></script>
+  </body>
+</html>
+
+<style is:global>
+  /* Floor 34, also in global.css: kept here so the page shell carries it. */
+  html, body { overflow-x: clip; }
+</style>
